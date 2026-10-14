@@ -1,0 +1,75 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          # macOS (Apple Silicon + Intel)
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+          # Windows (MSVC, no extra DLLs needed — no OpenSSL dependency)
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # UI must be built first: it is embedded into the binary at compile time.
+      - name: Build UI
+        working-directory: ui
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build release binary
+        run: cargo build --release --locked --target ${{ matrix.target }}
+
+      # No archives: publish the bare binary, named per target so users can
+      # download it and run it directly.
+      - name: Stage binary
+        shell: bash
+        env:
+          VERSION: ${{ github.ref_name }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          VERSION="${VERSION#v}"
+          mkdir -p dist
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cp "target/${TARGET}/release/sama.exe" "dist/sama-${VERSION}-${TARGET}.exe"
+          else
+            cp "target/${TARGET}/release/sama" "dist/sama-${VERSION}-${TARGET}"
+            chmod +x "dist/sama-${VERSION}-${TARGET}"
+          fi
+          ls -la dist/
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/sama-*
+          generate_release_notes: true

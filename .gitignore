@@ -1,1 +1,7 @@
 /target
+/dist
+*.tar.gz
+# Local config (copy from config.example.toml, never commit the live one)
+/config.toml
+# Local-only helper: contains your VPS address, must never be committed
+/sync_to_vps.sh
