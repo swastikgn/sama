@@ -1,0 +1,68 @@
+# sama — example config.
+# Copy to get started:
+#   cp config.example.toml config.toml
+#
+# Defaults follow the Kong convention: proxy on 8000, admin API + UI on 8001,
+# mock origins on 8002+.
+# - listen_address: where the TCP proxy listens.
+# - admin_listen_address: where the admin API + UI + /metrics listen.
+#   Must differ from listen_address and from every backend address.
+# - algorithm: round_robin | weighted_round_robin | least_connections |
+#   power_of_two_choices | random | consistent_hash
+# - weight: 1-1000 per backend. enabled/draining control rotation.
+# - For Docker/Compose you will need 0.0.0.0 instead of 127.0.0.1
+#   (see config.docker.toml later).
+
+listen_address = "127.0.0.1:8000"
+algorithm = "weighted_round_robin"
+admin_listen_address = "127.0.0.1:8001"
+max_connections = 1024
+listen_backlog = 512
+
+[[servers]]
+address = "127.0.0.1:8002"
+weight = 1
+enabled = true
+draining = false
+
+[[servers]]
+address = "127.0.0.1:8003"
+weight = 1
+enabled = true
+draining = false
+
+[[servers]]
+address = "127.0.0.1:8004"
+weight = 1
+enabled = true
+draining = false
+
+[[servers]]
+address = "127.0.0.1:8005"
+weight = 1
+enabled = true
+draining = false
+
+[[servers]]
+address = "127.0.0.1:8006"
+weight = 1
+enabled = true
+draining = false
+
+[[servers]]
+address = "127.0.0.1:8007"
+weight = 1
+enabled = true
+draining = false
+
+[[servers]]
+address = "127.0.0.1:8008"
+weight = 1
+enabled = true
+draining = false
+
+[[servers]]
+address = "127.0.0.1:8009"
+weight = 1
+enabled = true
+draining = false
