@@ -11,7 +11,7 @@ at runtime via the built-in dashboard. Ships as a single binary.
 Built with Rust (tokio + axum). The dashboard is Vue + Vite, compiled into the
 binary and served by it.
 
-<!-- ![dashboard](docs/screenshot.png) -->
+<img width="3420" height="1894" alt="image" src="https://github.com/user-attachments/assets/481fa908-0faa-4671-a81c-618425138e89" />
 
 ## Features
 
